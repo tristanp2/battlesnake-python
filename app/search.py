@@ -10,10 +10,18 @@ def in_dict(dictionary, key):
     else:
         return True
 
+class Container:
+    def __init__(self, value):
+        self.value = value
+    def __lt__(self,other):
+        return self.value < other.value
+
 class AStar:
+    #this is used to modify PQ priorities from dictionary access
+
+
     def __init__(self, size, pos, obstacles):
         self.board_size = size;
-        print(self.board_size)
         self.pos = pos;
         self.obstacles = obstacles
     
@@ -21,24 +29,24 @@ class AStar:
         evaluated = {}
 
         open_set_pq = PriorityQueue()
-        open_set_pq.put((0, self.pos)) 
+        open_set_pq.put((Container(0), self.pos)) 
         open_set = {}
         open_set[self.pos] = 0
         #cost of getting to these nodes from start
-        cost_from_start = {}
-        cost_from_start[self.pos] = 0
-        cost_to_goal = {}
+        f_score = {}
+        f_score[self.pos] = 0
+        g_score = {}
         came_from = {}
         
 
         for x in range(self.board_size):
             for y in range(self.board_size):
                 pos = (x,y)
-                cost_from_start[pos] = math.inf
+                f_score[pos] = Container(math.inf)
                 came_from[pos] = None
-                cost_to_goal[pos] = math.inf
+                g_score[pos] = Container(math.inf)
 
-        cost_to_goal[self.pos] = self.heuristic(self.pos, goal)
+        g_score[self.pos] = Container(self.heuristic(self.pos, goal))
         #print("finding path {} --> {}".format(self.pos,goal))
         i = 0
         while not open_set_pq.empty():
@@ -50,29 +58,29 @@ class AStar:
                 print("Num_iterations: ",i)
                 return self.reconstruct_path(came_from, current_pos)
              
-            evaluated[current_pos] = current_score
+            evaluated[current_pos] = current_score.value
             neighbours = self.get_neighbours(current_pos)
-            #print("searching neighbours")
             for neighbour in neighbours:
                 if in_dict(evaluated,neighbour):
                     continue
                 elif in_dict(self.obstacles,neighbour):
                     continue
-                elif not in_dict(cost_to_goal,neighbour):
+                elif not in_dict(g_score,neighbour):
                     continue
 
-                if not in_dict(open_set, neighbour):
-                    open_set[neighbour] = math.inf
 
-                tentative_score = cost_to_goal[current_pos] + 1
-                if tentative_score > cost_to_goal[neighbour]:
-                    open_set_pq.put((cost_from_start[neighbour],neighbour))
+                if not in_dict(open_set, neighbour):
+                    open_set[neighbour] = f_score.get(neighbour)
+                    open_set_pq.put((f_score.get(neighbour),neighbour))
+                    
+                tentative_g_score = g_score[current_pos].value + 1
+                if tentative_g_score >= g_score[neighbour].value:
                     continue
 
                 came_from[neighbour] = current_pos
-                cost_to_goal[neighbour] = tentative_score
-                cost_from_start[neighbour] = tentative_score + self.heuristic(neighbour,goal)
-                open_set_pq.put((cost_from_start[neighbour],neighbour))
+                g_score[neighbour].value = tentative_g_score
+                f_score[neighbour].value = tentative_g_score + self.heuristic(neighbour,goal)
+                open_set_pq.put((f_score[neighbour],neighbour))
 
 
     def reconstruct_path(self, came_from, current):

@@ -1,6 +1,7 @@
 import bottle
 import os
 import random
+from search import AStar, in_dict
 
 
 
@@ -34,16 +35,58 @@ def start():
         'head_url': head_url
     }
 
+def parse_point(point_obj):
+    return (point_obj["x"],point_obj["y"])
+
+def get_direction(src, dest):
+    (x1,y1) = src
+    (x2,y2) = dest
+    dx = x2 - x1
+    dy = y2 - y1
+    if dx > 0:  return "right"
+    if dx < 0:  return "left"
+    if dy > 0:  return "down"
+
+    return "up"
 
 @bottle.post('/move')
 def move():
     data = bottle.request.json
 
-    # TODO: Do things with data
+    food = data["food"]["data"]
+    height = data["height"]
+    my_id = data["you"]["id"]
+    snakes = data["snakes"]["data"]
+    obstacles = {}
+
+
+    head_pos = None
+    for snake in snakes:
+        body_data = snake["body"]["data"]
+        if snake.get("id") == my_id:
+            our_snake = snake
+            head_pos = parse_point(body_data[0])
+            print(head_pos)
+            body_data = body_data[1:]
+
+        for obj in body_data[1:]:
+            obstacles[parse_point(obj)] = None 
     
-    directions = ['up', 'down', 'left', 'right']
-    direction = random.choice(directions)
-    print direction
+    if in_dict(obstacles, head_pos):
+        del obstacles[head_pos]
+    
+    if head_pos == None:
+        print("we dead")
+    else:
+        path_finder = AStar(height, head_pos, obstacles)
+
+    target = parse_point(food[0])
+
+    path = path_finder.search(target)
+    dest = path[-2]
+    print("moving from {} to {}".format(head_pos,dest))
+    direction = get_direction(head_pos,dest)
+    print(direction)
     return {
         'move': direction,
         'taunt': 'battlesnake-python!'

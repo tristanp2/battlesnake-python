@@ -1,7 +1,6 @@
-import math
-from queue import PriorityQueue
+from Queue import PriorityQueue
 
-
+INF = 100000
 def in_dict(dictionary, key):
     try:
         dictionary[key]
@@ -42,9 +41,9 @@ class AStar:
         for x in range(self.board_size):
             for y in range(self.board_size):
                 pos = (x,y)
-                f_score[pos] = Container(math.inf)
+                f_score[pos] = Container(INF)
                 came_from[pos] = None
-                g_score[pos] = Container(math.inf)
+                g_score[pos] = Container(INF)
 
         g_score[self.pos] = Container(self.heuristic(self.pos, goal))
         #print("finding path {} --> {}".format(self.pos,goal))

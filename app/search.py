@@ -1,3 +1,4 @@
+from __future__ import print_function
 from Queue import PriorityQueue
 
 INF = 100000
@@ -8,6 +9,23 @@ def in_dict(dictionary, key):
         return False
     else:
         return True
+def get_neighbours(pos, board_size):
+    (x,y) = pos
+    (width,height) = board_size
+    x0 = x-1
+    x1 = x+1
+    y0 = y-1
+    y1 = y+1
+    if x0 < 0:
+        x0=0
+    if y0 < 0:
+        y0=0
+    if x1 >= width:
+        x1 = width - 1
+    if y1 >= height:
+        y1 = height - 1
+
+    return [(x0,y),(x1,y),(x,y0),(x,y1)]
 
 class Container:
     def __init__(self, value):
@@ -19,12 +37,12 @@ class AStar:
     #this is used to modify PQ priorities from dictionary access
 
 
-    def __init__(self, size, pos, obstacles):
-        self.board_size = size;
+    def __init__(self, size, pos):
+        (self.width, self.height) = size;
         self.pos = pos;
-        self.obstacles = obstacles
     
-    def search(self, goal):
+    #currently uses dicts in a few places where it should use sets
+    def search(self, goal, obstacles):
         evaluated = {}
 
         open_set_pq = PriorityQueue()
@@ -38,8 +56,8 @@ class AStar:
         came_from = {}
         
 
-        for x in range(self.board_size):
-            for y in range(self.board_size):
+        for x in range(self.width):
+            for y in range(self.height):
                 pos = (x,y)
                 f_score[pos] = Container(INF)
                 came_from[pos] = None
@@ -62,7 +80,7 @@ class AStar:
             for neighbour in neighbours:
                 if in_dict(evaluated,neighbour):
                     continue
-                elif in_dict(self.obstacles,neighbour):
+                elif neighbour in obstacles:
                     continue
                 elif not in_dict(g_score,neighbour):
                     continue
@@ -93,21 +111,7 @@ class AStar:
 
         
     def get_neighbours(self, pos):
-        (x,y) = pos
-        x0 = x-1
-        x1 = x+1
-        y0 = y-1
-        y1 = y+1
-        if x0 < 0:
-            x0=0
-        if y0 < 0:
-            y0=0
-        if x1 >= self.board_size:
-            x1 = self.board_size - 1
-        if y1 >= self.board_size:
-            y1 = self.board_size - 1
-
-        return [(x0,y),(x1,y),(x,y0),(x,y1)]
+        return get_neighbours(pos, (self.width,self.height))
 
     def heuristic(self,start, end):
         (x1,y1) = start

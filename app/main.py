@@ -3,7 +3,7 @@ import bottle
 import os
 import random
 import json
-from search import AStar, in_dict, get_neighbours
+from search import AStar, in_dict, get_neighbours, manhattan_dist
 from time import clock
 
 
@@ -32,15 +32,42 @@ def start():
         bottle.request.urlparts.netloc
     )
 
-    # TODO: Do things with data
+    #setup persistent info
+    info = {}
+    info["ticks"] = 0
+    import socket
+    taunt = socket.gethostname()
+    info["taunt"] = taunt
+
+
+    json.dump(info, open('info.json', 'w'))
+    print("info file created")
+
+    
 
     return {
         'color': '#DD00DD',
-        'taunt': '{} ({}x{})'.format(game_id, board_width, board_height),
+        'secondary_color': '0000FF',
+        'taunt': taunt,
         'head_url': head_url,
         'head_type': 'safe',
         'tail_type': 'small-rattle'
     }
+def find_closest_pos_dist(pos, pos_list):
+    min_dist = 10000
+    ret_pos = None
+    for targ_pos in pos_list:
+        dist = manhattan_dist(pos, targ_pos)
+        if dist < min_dist:
+            min_dist = dist
+            ret_pos = targ_pos
+    return (ret_pos, min_dist)
+
+def find_closest_dist(pos, pos_list):
+    return find_closest_pos_dist(pos,pos_list)[1]
+    
+def find_closest_pos(pos, pos_list):
+    return find_closest_pos_dist(pos,pos_list)[0]
 
 def parse_point(point_obj):
     return (point_obj["x"],point_obj["y"])
@@ -65,7 +92,7 @@ def shrink_tail(body_points):
     return body_points[:-1]
 
 #converts list of point dicts to list of tuples
-def parse_body_data(body_data):
+def parse_point_list(body_data):
     return map(parse_point, body_data)
 
 def get_direction(src, dest):
@@ -83,71 +110,108 @@ def get_direction(src, dest):
 def move():
     tick_start = clock()
     data = bottle.request.json
+
+
     try:
+        #get information saved from previous tick
         info = json.load(open("info.json","r"))
     except:
+        #if no information was saved, initialize info
+        print("No json info found")
         info = {}
         info["ticks"] = 0
 
     print("tick:",info["ticks"])
     info["ticks"] += 1
+    taunt = info["taunt"]
 
 
-
-    food = data["food"]["data"]
+    foods = parse_point_list(data["food"]["data"])
     board_width  = data["width"]
     board_height = data["height"]
     board_size = (board_width, board_height)
-    my_id = data["you"]["id"]
+    my_snake = data["you"]
+    my_id = my_snake["id"]
+    my_body = parse_point_list(my_snake["body"]["data"])
+    my_head_pos = my_body[0]
+    my_tail_pos = my_body[-1]
+    my_size = len(my_body)
     snakes = data["snakes"]["data"]
 
-    #should change this to a set
+    closest_to_food = {}
+    for food in foods:
+        closest_to_food[food] = {}
+        closest_to_food[food]["dist"] = 10000
+
+    #obstacles gathering loop
     obstacles = set()
     extended_obstacles = set()
-    head_pos = None
     for snake in snakes:
-        body_points = parse_body_data(snake["body"]["data"])
+        body_points = parse_point_list(snake["body"]["data"])
         if snake.get("id") == my_id:
-            our_snake = snake
-            head_pos = body_points[0]
             body_points = body_points[1:]
+
+            food_pos, food_dist = find_closest_pos_dist(my_head_pos, foods)
+            if food_dist < closest_to_food[food_pos]["dist"]:
+                closest_to_food[food_pos]["dist"] = food_dist
+                closest_to_food[food_pos]["id"] = snake.get("id")
+
+            if food_dist > 1:
+                body_points = body_points[:-1]
         else:
-            #TODO:in future, heads should only be extended based on certain criteria:
+            #TODO: moving into a head extension of a smaller snake might be a really good offensive move
+            #       need to make sure to not get into shit while doing it though
+            #heads should only be extended based on certain criteria:
             #       - in certain range of our head
             #       - owning snake is as big as our snake
-            extended_obstacles.update(extend_head(body_points,board_size))
+            head_pos = body_points[0]
+            snake_dist = find_closest_dist(my_head_pos, body_points)
+            snake_size = len(body_points)
+            food_pos, food_dist = find_closest_pos_dist(head_pos, foods)
+            if food_dist < closest_to_food[food_pos]["dist"]:
+                closest_to_food[food_pos]["dist"] = food_dist
+                closest_to_food[food_pos]["id"] = snake.get("id")
 
-            #TODO:tail positions should only be removed when the owning snake's head is not
+            if snake_dist < 5 and snake_size >= my_size:
+                extended_obstacles.update(extend_head(body_points,board_size))
+
+            #tail positions should only be removed when the owning snake's head is not
             # one space away from food. this also goes for our snake
             tail_pos = body_points[-1]
-            if tail_pos in extended_obstacles:
-                extended_obstacles.remove(tail_pos)
+            if food_dist >  1:
+                body_points = body_points[:-1]
 
         obstacles.update(body_points)
     
-    if head_pos in obstacles:
-        obstacles.remove(head_pos)
-    if head_pos in extended_obstacles:
-        extended_obstacles.remove(head_pos)
+    print(closest_to_food)
+    closest_food_pos, closest_food_dist = find_closest_pos_dist(my_head_pos, foods)
+    print(closest_food_pos, closest_food_dist)
+    if closest_food_dist > closest_to_food[closest_food_pos]["dist"]:
+        target = my_tail_pos
+    else:
+        target = closest_food_pos
+
+    #only reason these might be needed is if some extension obstacle happens to be our head pos
+    if my_head_pos in obstacles:
+        print("WTFFFFFFFF")
+        obstacles.remove(my_head_pos)
+    if my_head_pos in extended_obstacles:
+        extended_obstacles.remove(my_head_pos)
 
     extended_obstacles = extended_obstacles.union(obstacles)
 
-    print("head: ", head_pos)
+    print("head: ", my_head_pos)
     print("Obstacles: ", obstacles)
     print("ExtendedObstacles: ", extended_obstacles)
     
-    if head_pos == None:
-        print("we dead")
-    else:
-        path_finder = AStar((board_width, board_height), head_pos)
+    path_finder = AStar((board_width, board_height), my_head_pos)
 
-    target = parse_point(food[0])
     print("target: ", target)
 
     #prefer to avoid entering extended obstacles
-    #TODO: remove extended head positions from obstacles if the head belongs
-    #   to a smaller snake
     #       in future, the following code will be last resort, after no valid targets are found
+    #TODO:  Need to find way to quantify openness of region of space to determine how safe it is
+    #       Maybe average number of open neighbours per space?
     dest = None
     backup_dest = None
     path = path_finder.search(target, extended_obstacles)
@@ -157,7 +221,8 @@ def move():
 
     if target in extended_obstacles or path == None:
         print("find new target!!!")
-        neighbours = get_neighbours(head_pos, board_size)
+        neighbours = get_neighbours(my_head_pos, board_size)
+        print("finding valid space in: ", neighbours)
         for neighbour in neighbours:
             if neighbour not in extended_obstacles:
                 dest = neighbour
@@ -173,8 +238,8 @@ def move():
     elif dest == None and backup_dest == None:
         print("we r fuked")
 
-    print("moving from {} to {}".format(head_pos,dest))
-    direction = get_direction(head_pos,dest)
+    print("moving from {} to {}".format(my_head_pos,dest))
+    direction = get_direction(my_head_pos,dest)
     print(direction)
     tick_end = clock()
     tick_duration = tick_end - tick_start
@@ -183,7 +248,7 @@ def move():
     json.dump(info, open("info.json","w"))
     return {
         'move': direction,
-        'taunt': 'battlesnake-python!'
+        'taunt': taunt
     }
 
 

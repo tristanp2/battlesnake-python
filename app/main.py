@@ -2,6 +2,7 @@ from __future__ import print_function
 import bottle
 import os
 import random
+import json
 from search import AStar, in_dict, get_neighbours
 from time import clock
 
@@ -82,6 +83,16 @@ def get_direction(src, dest):
 def move():
     tick_start = clock()
     data = bottle.request.json
+    try:
+        info = json.load(open("info.json","r"))
+    except:
+        info = {}
+        info["ticks"] = 0
+
+    print("tick:",info["ticks"])
+    info["ticks"] += 1
+
+
 
     food = data["food"]["data"]
     board_width  = data["width"]
@@ -168,6 +179,8 @@ def move():
     tick_end = clock()
     tick_duration = tick_end - tick_start
     print("Elapsed: {}ms".format(tick_duration*1000))
+    
+    json.dump(info, open("info.json","w"))
     return {
         'move': direction,
         'taunt': 'battlesnake-python!'

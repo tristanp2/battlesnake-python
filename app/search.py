@@ -16,17 +16,26 @@ def get_neighbours(pos, board_size):
     x1 = x+1
     y0 = y-1
     y1 = y+1
-    if x0 < 0:
-        x0=0
-    if y0 < 0:
-        y0=0
-    if x1 >= width:
-        x1 = width - 1
-    if y1 >= height:
-        y1 = height - 1
+    neighbours = []
+    if x0 >= 0:
+        neighbours.append((x0,y))
+    if y0 >= 0:
+        neighbours.append((x,y0))
+    if x1 < width:
+        neighbours.append((x1,y))
+    if y1 < height:
+        neighbours.append((x,y1))
 
-    return [(x0,y),(x1,y),(x,y0),(x,y1)]
+    return neighbours
 
+def manhattan_dist(src, dest):
+    (x1,y1) = src
+    (x2,y2) = dest
+    return abs(x2-x1) + abs(y2-y1)
+
+#this is used to modify PQ priorities from by accessing object ref through dictionary
+#honestly don't know if this screws with the priority queue at all, but it seems to be working
+#well so far
 class Container:
     def __init__(self, value):
         self.value = value
@@ -34,7 +43,6 @@ class Container:
         return self.value < other.value
 
 class AStar:
-    #this is used to modify PQ priorities from dictionary access
 
 
     def __init__(self, size, pos):
@@ -114,9 +122,7 @@ class AStar:
         return get_neighbours(pos, (self.width,self.height))
 
     def heuristic(self,start, end):
-        (x1,y1) = start
-        (x2,y2) = end
-        return abs(x2-x1) + abs(y2-y1)
+        return manhattan_dist(start,end)
 
 
 if __name__=='__main__':

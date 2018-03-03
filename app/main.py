@@ -199,6 +199,7 @@ def move():
     #obstacles gathering loop
     obstacles = set()
     extended_obstacles = set()
+    head_extension_debug = []
     for snake in snakes:
         body_points = parse_point_list(snake["body"]["data"])
         if snake.get("id") == my_id:
@@ -225,8 +226,13 @@ def move():
                 closest_to_food[food_pos]["dist"] = food_dist
                 closest_to_food[food_pos]["id"] = snake.get("id")
 
-            if snake_dist < 5 and snake_size >= my_size:
-                extended_obstacles.update(extend_head(body_points,board_size))
+            if snake_dist == 1 and snake_size < my_size:
+                #offense!
+                pass
+            elif snake_dist < 5:
+                extension = extend_head(body_points,board_size)
+                head_extension_debug.extend(extension)
+                extended_obstacles.update(extension)
 
             #tail positions should only be removed when the owning snake's head is not
             # one space away from food. this also goes for our snake
@@ -261,8 +267,6 @@ def move():
 
     #prefer to avoid entering extended obstacles
     #       in future, the following code will be last resort, after no valid targets are found
-    #TODO:  Need to find way to quantify openness of region of space to determine how safe it is
-    #       Maybe average number of open neighbours per space?
     dest = None
     backup_dest = None
     path = path_finder.search(target, extended_obstacles)
@@ -280,9 +284,6 @@ def move():
                 break
             elif neighbour not in obstacles:
                 backup_dest = neighbour
-
-
-
     else:
         dest = path[-2]
 
@@ -293,8 +294,6 @@ def move():
     elif dest == None and backup_dest == None:
         print("we r fuked")
 
-    openness = flood_fill(dest,board_size,extended_obstacles)
-    print("dest openness: ", openness)
     if openness < my_size*2:
         print("heading to deadend?")
         neighbours = get_neighbours(my_head_pos, board_size)
@@ -318,6 +317,9 @@ def move():
                     break
         else:
             dest = best_dest
+
+    openness = flood_fill(dest,board_size,extended_obstacles)
+    print("dest openness: ", openness)
 
     print("moving from {} to {}".format(my_head_pos,dest))
     direction = get_direction(my_head_pos,dest)

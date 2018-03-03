@@ -290,8 +290,10 @@ def move():
         if path == None:
             sampled = sample_surrounding_pos(my_head_pos, board_size)
             dest = None
+            print("sampled: ", sampled)
             for sample in sampled:
                 openness = flood_fill(sample, board_size, extended_obstacles)
+                print(sample, ": ", openness)
                 if sample != target and sample not in extended_obstacles:
                     path = path_finder.search(sample, extended_obstacles)
                     if path != None:

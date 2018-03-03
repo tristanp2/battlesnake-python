@@ -269,7 +269,7 @@ def move():
                 
 
     print("head: ", my_head_pos)
-    
+    print("cost: ", space_cost) 
     path_finder = AStar((board_width, board_height), my_head_pos)
 
     print("target: ", target)

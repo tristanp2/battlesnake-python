@@ -319,7 +319,7 @@ def move():
         else:
             dest = best_dest
 
-    print("dest openness: ", flood_fill(dest))
+    print("dest openness: ", flood_fill(dest, board_size, extended_obstacles))
 
     print("moving from {} to {}".format(my_head_pos,dest))
     direction = get_direction(my_head_pos,dest)

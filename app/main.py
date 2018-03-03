@@ -242,9 +242,8 @@ def move():
 
         obstacles.update(body_points)
     
-    print(closest_to_food)
     closest_food_pos, closest_food_dist = find_closest_pos_dist(my_head_pos, foods)
-    print(closest_food_pos, closest_food_dist)
+    print("head extensions: ",  head_extension_debug)
     if my_health > 40 and closest_food_dist > closest_to_food[closest_food_pos]["dist"]:
         target = my_tail_pos
     else:
@@ -287,6 +286,8 @@ def move():
     else:
         dest = path[-2]
 
+    openness = flood_fill(dest,board_size,extended_obstacles)
+
     print("tailpos obst: ", my_tail_pos in extended_obstacles)
     if dest == None and backup_dest != None:
         print("using backup dest")
@@ -318,8 +319,7 @@ def move():
         else:
             dest = best_dest
 
-    openness = flood_fill(dest,board_size,extended_obstacles)
-    print("dest openness: ", openness)
+    print("dest openness: ", flood_fill(dest))
 
     print("moving from {} to {}".format(my_head_pos,dest))
     direction = get_direction(my_head_pos,dest)

@@ -269,9 +269,7 @@ def move():
     if path == None:
         print("second pathfind attempt")
         path = path_finder.search(target, obstacles)
-    openness = flood_fill(target,board_size,extended_obstacles)
 
-    print("target openness: ", openness)
     if target in extended_obstacles or path == None:
         print("find new target!!!")
         neighbours = get_neighbours(my_head_pos, board_size)
@@ -282,7 +280,22 @@ def move():
                 break
             elif neighbour not in obstacles:
                 backup_dest = neighbour
-    elif openness < my_size*2:
+
+
+
+    else:
+        dest = path[-2]
+
+    print("tailpos obst: ", my_tail_pos in extended_obstacles)
+    if dest == None and backup_dest != None:
+        print("using backup dest")
+        dest = backup_dest
+    elif dest == None and backup_dest == None:
+        print("we r fuked")
+
+    openness = flood_fill(dest,board_size,extended_obstacles)
+    print("dest openness: ", openness)
+    if openness < my_size*2:
         print("heading to deadend?")
         neighbours = get_neighbours(my_head_pos, board_size)
         best_open = -1
@@ -305,17 +318,6 @@ def move():
                     break
         else:
             dest = best_dest
-
-    else:
-        dest = path[-2]
-
-    print("tailpos obst: ", my_tail_pos in extended_obstacles)
-    if dest == None and backup_dest != None:
-        print("using backup dest")
-        dest = backup_dest
-    elif dest == None and backup_dest == None:
-        print("we r fuked")
-
 
     print("moving from {} to {}".format(my_head_pos,dest))
     direction = get_direction(my_head_pos,dest)

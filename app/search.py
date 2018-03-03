@@ -130,11 +130,13 @@ def flood_fill(pos, board_size, obstacles):
     found.add(pos)
     q.put(pos)
     
+    print("fill from: ",pos)
     while not q.empty():
         pos = q.get()
         neighbours = get_neighbours(pos, board_size)
         for neighbour in neighbours:
             if neighbour not in found and neighbour not in obstacles:
+                print(neighbour, " found")
                 found.add(neighbour)
                 q.put(neighbour)
 

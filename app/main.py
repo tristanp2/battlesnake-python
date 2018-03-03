@@ -253,6 +253,18 @@ def move():
         target = closest_food_pos
 
     extended_obstacles = extended_obstacles.union(obstacles)
+    space_cost = {}
+    for x in range(board_width):
+        for y in range(board_height):
+            pos = (x,y)
+            if pos not in extended_obstacles:
+                neighbours = get_neighbours(pos, board_size) 
+                cost = 5
+                for n in neighbours:
+                    if n not in extended_obstacles:
+                        cost -= 1
+                space_cost[pos] = max(cost,0)
+                
 
     print("head: ", my_head_pos)
     
@@ -266,10 +278,10 @@ def move():
     backup_dest = None
     pathfind_extended_obstacles = extended_obstacles - set([my_head_pos])
     pathfind_obstacles = obstacles - set([my_head_pos])
-    path = path_finder.search(target, pathfind_extended_obstacles)
+    path = path_finder.search(target, pathfind_extended_obstacles, space_cost)
     if path == None:
         print("second pathfind attempt")
-        path = path_finder.search(target, pathfind_obstacles)
+        path = path_finder.search(target, pathfind_obstacles, space_cost)
 
     if target in extended_obstacles or path == None:
         print("find new target!!!")

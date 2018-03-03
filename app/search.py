@@ -50,9 +50,9 @@ class AStar:
         self.pos = pos;
     
     #currently uses dicts in a few places where it should use sets
-    def search(self, goal, obstacles):
+    def search(self, goal, obstacles, space_cost = None):
         evaluated = {}
-
+        
         open_set_pq = PriorityQueue()
         open_set_pq.put((Container(0), self.pos)) 
         open_set = {}
@@ -98,7 +98,7 @@ class AStar:
                     open_set[neighbour] = f_score.get(neighbour)
                     open_set_pq.put((f_score.get(neighbour),neighbour))
                     
-                tentative_g_score = g_score[current_pos].value + 1
+                tentative_g_score = g_score[current_pos].value + space_cost[current_pos]
                 if tentative_g_score >= g_score[neighbour].value:
                     continue
 

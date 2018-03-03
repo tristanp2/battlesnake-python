@@ -249,13 +249,6 @@ def move():
     else:
         target = closest_food_pos
 
-    #only reason these might be needed is if some extension obstacle happens to be our head pos
-    if my_head_pos in obstacles:
-        print("WTFFFFFFFF")
-        obstacles.remove(my_head_pos)
-    if my_head_pos in extended_obstacles:
-        extended_obstacles.remove(my_head_pos)
-
     extended_obstacles = extended_obstacles.union(obstacles)
 
     print("head: ", my_head_pos)

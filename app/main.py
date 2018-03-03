@@ -291,7 +291,7 @@ def move():
             sampled = sample_surrounding_pos(my_head_pos, board_size)
             dest = None
             for sample in sampled:
-                openness = flood_fill(sample, board_size)
+                openness = flood_fill(sample, board_size, extended_obstacles)
                 if sample != target and sample not in extended_obstacles:
                     path = path_finder.search(sample)
                     if path != None:

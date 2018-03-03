@@ -291,6 +291,7 @@ def move():
             elif neighbour not in obstacles:
                 backup_dest = neighbour
         dest = best_dest
+        print("most open is: ", best_open,best_dest)
     else:
         dest = path[-2]
 

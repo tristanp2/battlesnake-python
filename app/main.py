@@ -3,7 +3,7 @@ import bottle
 import os
 import random
 import json
-from search import AStar, in_dict, get_neighbours, manhattan_dist
+from search import AStar, in_dict, get_neighbours, manhattan_dist, flood_fill
 from time import clock
 
 
@@ -212,14 +212,16 @@ def move():
     #       in future, the following code will be last resort, after no valid targets are found
     #TODO:  Need to find way to quantify openness of region of space to determine how safe it is
     #       Maybe average number of open neighbours per space?
+    openness = flood_fill(board_size,dest,obstacles))
     dest = None
     backup_dest = None
     path = path_finder.search(target, extended_obstacles)
+    if openness < mysize:
     if path == None:
         print("second pathfind attempt")
         path = path_finder.search(target, obstacles)
 
-    if target in extended_obstacles or path == None:
+    if target in extended_obstacles or path == None or openness < my_size * 2:
         print("find new target!!!")
         neighbours = get_neighbours(my_head_pos, board_size)
         print("finding valid space in: ", neighbours)
@@ -237,6 +239,7 @@ def move():
         dest = backup_dest
     elif dest == None and backup_dest == None:
         print("we r fuked")
+
 
     print("moving from {} to {}".format(my_head_pos,dest))
     direction = get_direction(my_head_pos,dest)

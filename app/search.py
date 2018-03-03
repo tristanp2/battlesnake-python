@@ -1,5 +1,5 @@
 from __future__ import print_function
-from Queue import PriorityQueue
+from Queue import PriorityQueue, Queue
 
 INF = 100000
 def in_dict(dictionary, key):
@@ -124,6 +124,21 @@ class AStar:
     def heuristic(self,start, end):
         return manhattan_dist(start,end)
 
+def flood_fill(board_size, pos, obstacles):
+    found =set()
+    q = Queue()
+    found.add(pos)
+    q.put(pos)
+    
+    while not q.empty():
+        pos = q.get()
+        neighbours = get_neighbours(pos, board_size)
+        for neighbour in neighbours:
+            if neighbour not in found and neighbour not in obstacles:
+                found.add(neighbour)
+                q.put(neighbour)
+
+    return len(found)
 
 if __name__=='__main__':
     search = AStar(10,(0,0),{})

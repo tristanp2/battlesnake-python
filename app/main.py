@@ -294,7 +294,7 @@ def move():
                     best_open = openness
                     best_dest = neighbour
 
-        if best_dest = None:
+        if best_dest == None:
             for neighbour in neighbours:
                 if neighbour not in obstacles:
                     dest = neighbour

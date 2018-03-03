@@ -25,8 +25,8 @@ def get_neighbours(pos, board_size):
         neighbours.append((x1,y))
     if y1 < height:
         neighbours.append((x,y1))
-
     return neighbours
+
 
 def manhattan_dist(src, dest):
     (x1,y1) = src
@@ -124,7 +124,7 @@ class AStar:
     def heuristic(self,start, end):
         return manhattan_dist(start,end)
 
-def flood_fill(board_size, pos, obstacles):
+def flood_fill(pos, board_size, obstacles):
     found =set()
     q = Queue()
     found.add(pos)

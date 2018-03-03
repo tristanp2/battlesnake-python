@@ -53,6 +53,56 @@ def start():
         'head_type': 'safe',
         'tail_type': 'small-rattle'
     }
+
+def sample_surrounding_pos(pos, board_size, dist = 3):
+    width,height = board_size
+    x0 = pos[0] - dist
+    x1 = pos[0] + dist
+    y0 = pos[1] - dist
+    y1 = pos[1] + dist
+    x00 = pos[0] - dist/2
+    x01 = pos[0] + dist/2
+    y00 = pos[1] - dist/2
+    x01 = pos[1] + dist/2
+    
+    ret_list = []
+
+    if x0 > 0:
+        ret_list.append((x0,y))
+    if x1 < width:
+        ret_list.append((x1,y))
+    if y0 > 0:
+        ret_list.append((x,y0))
+    if y1 < height:
+        ret_list.append((x,y1))
+
+    if x00 > 0:
+        if y00 > 0:
+            ret_list.append((x00,y00))
+        if y01 < height:
+            ret_list.append((x00,y01))
+    if x01 < width:
+        if y00 > 0:
+            ret_list.append((x01,y00))
+        if y01 < height:
+            ret_list.append((x01,y01))
+
+    return ret_list 
+
+def find_most_open_sampled_pos(pos, board_size, obstacles, dist = 3):
+    sampled = sample_surrounding_pos(pos, board_size, dist)
+    best_open = -1
+    best_pos = ()
+    
+    for sample in sampled:
+        samp_open = flood_fill(sample, board_size, obstacles)
+        if samp_open > best_open:
+            best_pos = sample
+            best_open = samp_open
+
+    return (best_pos, best_open)
+        
+
 def find_closest_pos_dist(pos, pos_list):
     min_dist = 10000
     ret_pos = None
@@ -201,8 +251,6 @@ def move():
     extended_obstacles = extended_obstacles.union(obstacles)
 
     print("head: ", my_head_pos)
-    print("Obstacles: ", obstacles)
-    print("ExtendedObstacles: ", extended_obstacles)
     
     path_finder = AStar((board_width, board_height), my_head_pos)
 
@@ -218,9 +266,10 @@ def move():
     if path == None:
         print("second pathfind attempt")
         path = path_finder.search(target, obstacles)
-    openness = flood_fill(board_size,target,obstacles)
+    openness = flood_fill(target,board_size,extended_obstacles)
 
-    if target in extended_obstacles or path == None or openness < my_size * 2:
+    print("target openness: ", openness)
+    if target in extended_obstacles or path == None:
         print("find new target!!!")
         neighbours = get_neighbours(my_head_pos, board_size)
         print("finding valid space in: ", neighbours)
@@ -230,6 +279,20 @@ def move():
                 break
             elif neighbour not in obstacles:
                 backup_dest = neighbour
+    elif openness < my_size*2:
+        print("heading to deadend?")
+        target, openness = find_most_open_sampled_pos(my_head_pos, board_size, extended_obstacles)
+        
+        path = path_finder.search(target, extended_obstacles)
+        if path == None:
+            sampled = sample_surrounding_pos(my_head_pos, board_size)
+            dest = None
+            for sample in sampled:
+                openness = flood_fill(sample, board_size)
+                if sample != target and sample not in extended_obstacles:
+                    path = path_finder.search(sample)
+                    if path != None:
+                        dest = path[-2]
     else:
         dest = path[-2]
 

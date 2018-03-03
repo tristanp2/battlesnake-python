@@ -226,7 +226,7 @@ def move():
                 closest_to_food[food_pos]["dist"] = food_dist
                 closest_to_food[food_pos]["id"] = snake.get("id")
 
-            if snake_dist == 1 and snake_size < my_size:
+            if snake_dist == 2 and snake_size < my_size:
                 #offense!
                 pass
             elif snake_dist < 5:

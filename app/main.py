@@ -247,7 +247,7 @@ def move():
     
     closest_food_pos, closest_food_dist = find_closest_pos_dist(my_head_pos, foods)
     print("head extensions: ",  head_extension_debug)
-    if my_health > FOOD_THRESHOLD and closest_food_dist > closest_to_food[closest_food_pos]["dist"]:
+    if my_health > FOOD_THRESHOLD:
         target = my_tail_pos
     else:
         target = closest_food_pos
@@ -269,7 +269,6 @@ def move():
                 
 
     print("head: ", my_head_pos)
-    print("cost: ", space_cost) 
     path_finder = AStar((board_width, board_height), my_head_pos)
 
     print("target: ", target)
@@ -304,7 +303,6 @@ def move():
         dest = path[-2]
 
 
-    print("tailpos obst: ", my_tail_pos in extended_obstacles)
     if dest == None and backup_dest != None:
         print("using backup dest")
         dest = backup_dest

@@ -295,7 +295,7 @@ def move():
         dest = backup_dest
     elif dest == None and backup_dest == None:
         print("we r fuked")
-
+    print("obst: ", extended_obstacles)
     openness = flood_fill(dest,board_size,extended_obstacles)
     if openness < my_size*2:
         print("heading to deadend?")

@@ -216,7 +216,6 @@ def move():
     dest = None
     backup_dest = None
     path = path_finder.search(target, extended_obstacles)
-    if openness < mysize:
     if path == None:
         print("second pathfind attempt")
         path = path_finder.search(target, obstacles)

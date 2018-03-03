@@ -304,7 +304,7 @@ def move():
                     dest = neighbour
                     break
         else:
-            dest = best_nest
+            dest = best_dest
 
     else:
         dest = path[-2]

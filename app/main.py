@@ -205,8 +205,6 @@ def move():
     for snake in snakes:
         body_points = parse_point_list(snake["body"]["data"])
         if snake.get("id") == my_id:
-            body_points = body_points[1:]
-
             food_pos, food_dist = find_closest_pos_dist(my_head_pos, foods)
             if food_dist < closest_to_food[food_pos]["dist"]:
                 closest_to_food[food_pos]["dist"] = food_dist
@@ -270,10 +268,12 @@ def move():
     #       in future, the following code will be last resort, after no valid targets are found
     dest = None
     backup_dest = None
-    path = path_finder.search(target, extended_obstacles)
+    pathfind_extended_obstacles = extended_obstacles - set([my_head_pos])
+    pathfind_obstacles = obstacles - set([my_head_pos])
+    path = path_finder.search(target, pathfind_extended_obstacles)
     if path == None:
         print("second pathfind attempt")
-        path = path_finder.search(target, obstacles)
+        path = path_finder.search(target, pathfind_obstacles)
 
     if target in extended_obstacles or path == None:
         print("find new target!!!")

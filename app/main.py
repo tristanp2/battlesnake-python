@@ -212,13 +212,13 @@ def move():
     #       in future, the following code will be last resort, after no valid targets are found
     #TODO:  Need to find way to quantify openness of region of space to determine how safe it is
     #       Maybe average number of open neighbours per space?
-    openness = flood_fill(board_size,dest,obstacles)
     dest = None
     backup_dest = None
     path = path_finder.search(target, extended_obstacles)
     if path == None:
         print("second pathfind attempt")
         path = path_finder.search(target, obstacles)
+    openness = flood_fill(board_size,target,obstacles)
 
     if target in extended_obstacles or path == None or openness < my_size * 2:
         print("find new target!!!")

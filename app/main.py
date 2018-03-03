@@ -287,12 +287,16 @@ def move():
         neighbours = get_neighbours(my_head_pos, board_size)
         best_open = -1
         best_dest = None
+        print("checking neighbours...")
         for neighbour in neighbours:
             if neighbour not in extended_obstacles:
+                print(neighbour, "is potential move")
                 openness = flood_fill(neighbour, board_size, extended_obstacles)
                 if openness > best_open:
                     best_open = openness
                     best_dest = neighbour
+            else:
+                print(neighbour, " in obstacles")
 
         if best_dest == None:
             for neighbour in neighbours:
@@ -303,6 +307,7 @@ def move():
     else:
         dest = path[-2]
 
+    print("tailpos obst: ", my_tail_pos in extended_obstacles)
     if dest == None and backup_dest != None:
         print("using backup dest")
         dest = backup_dest

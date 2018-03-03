@@ -56,6 +56,7 @@ def start():
 
 def sample_surrounding_pos(pos, board_size, dist = 3):
     width,height = board_size
+    (x,y) = board_size
     x0 = pos[0] - dist
     x1 = pos[0] + dist
     y0 = pos[1] - dist

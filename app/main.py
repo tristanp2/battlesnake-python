@@ -219,7 +219,7 @@ def move():
             #       - in certain range of our head
             #       - owning snake is as big as our snake
             head_pos = body_points[0]
-            snake_dist = find_closest_dist(my_head_pos, body_points)
+            snake_dist = manhattan_dist(my_head_pos, head_pos)
             snake_size = len(body_points)
             food_pos, food_dist = find_closest_pos_dist(head_pos, foods)
             if food_dist < closest_to_food[food_pos]["dist"]:
@@ -233,6 +233,9 @@ def move():
                 extension = extend_head(body_points,board_size)
                 head_extension_debug.extend(extension)
                 extended_obstacles.update(extension)
+
+            if manhattan_dist(my_head_pos, head_pos) <  and (head_pos[0] == 0 or head_pos[1] == 0):
+                print("ATTACCHCCHCK")
 
             #tail positions should only be removed when the owning snake's head is not
             # one space away from food. this also goes for our snake

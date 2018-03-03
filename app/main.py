@@ -303,6 +303,8 @@ def move():
                 if neighbour not in obstacles:
                     dest = neighbour
                     break
+        else:
+            dest = best_nest
 
     else:
         dest = path[-2]

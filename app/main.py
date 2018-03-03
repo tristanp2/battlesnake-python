@@ -234,7 +234,7 @@ def move():
                 head_extension_debug.extend(extension)
                 extended_obstacles.update(extension)
 
-            if manhattan_dist(my_head_pos, head_pos) <  and (head_pos[0] == 0 or head_pos[1] == 0):
+            if manhattan_dist(my_head_pos, head_pos) < 3 and (head_pos[0] == 0 or head_pos[1] == 0):
                 print("ATTACCHCCHCK")
 
             #tail positions should only be removed when the owning snake's head is not

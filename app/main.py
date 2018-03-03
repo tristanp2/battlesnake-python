@@ -284,20 +284,22 @@ def move():
                 backup_dest = neighbour
     elif openness < my_size*2:
         print("heading to deadend?")
-        target, openness = find_most_open_sampled_pos(my_head_pos, board_size, extended_obstacles)
-        
-        path = path_finder.search(target, extended_obstacles)
-        if path == None:
-            sampled = sample_surrounding_pos(my_head_pos, board_size)
-            dest = None
-            print("sampled: ", sampled)
-            for sample in sampled:
-                openness = flood_fill(sample, board_size, extended_obstacles)
-                print(sample, ": ", openness)
-                if sample != target and sample not in extended_obstacles:
-                    path = path_finder.search(sample, extended_obstacles)
-                    if path != None:
-                        dest = path[-2]
+        neighbours = get_neighbours(my_head_pos)
+        best_open = -1
+        best_dest = None
+        for neighbour in neighbours:
+            if neighbour not in extended_obstacles:
+                openness = flood_fill(neighbour, board_size, extended_obstacles)
+                if openness > best_open:
+                    best_open = openness
+                    best_dest = neighbour
+
+        if best_dest = None:
+            for neighbour in neighbours:
+                if neighbour not in obstacles:
+                    dest = neighbour
+                    break
+
     else:
         dest = path[-2]
 

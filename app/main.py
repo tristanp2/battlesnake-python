@@ -187,6 +187,7 @@ def move():
     my_body = parse_point_list(my_snake["body"]["data"])
     my_head_pos = my_body[0]
     my_tail_pos = my_body[-1]
+    my_health = my_snake["health"]
     my_size = len(my_body)
     snakes = data["snakes"]["data"]
 
@@ -238,7 +239,7 @@ def move():
     print(closest_to_food)
     closest_food_pos, closest_food_dist = find_closest_pos_dist(my_head_pos, foods)
     print(closest_food_pos, closest_food_dist)
-    if closest_food_dist > closest_to_food[closest_food_pos]["dist"]:
+    if my_health > 40 and closest_food_dist > closest_to_food[closest_food_pos]["dist"]:
         target = my_tail_pos
     else:
         target = closest_food_pos

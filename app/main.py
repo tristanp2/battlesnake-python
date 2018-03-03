@@ -284,7 +284,7 @@ def move():
                 backup_dest = neighbour
     elif openness < my_size*2:
         print("heading to deadend?")
-        neighbours = get_neighbours(my_head_pos)
+        neighbours = get_neighbours(my_head_pos, board_size)
         best_open = -1
         best_dest = None
         for neighbour in neighbours:

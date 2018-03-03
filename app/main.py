@@ -278,13 +278,19 @@ def move():
     if target in extended_obstacles or path == None:
         print("find new target!!!")
         neighbours = get_neighbours(my_head_pos, board_size)
+        best_open = -1
+        best_dest = None
         print("finding valid space in: ", neighbours)
         for neighbour in neighbours:
             if neighbour not in extended_obstacles:
-                dest = neighbour
+                openness = flood_fill(neighbour, board_size, extended_obstacles)
+                if openness > best_open:
+                    best_dest = neighbour
+                    best_open = openness
                 break
             elif neighbour not in obstacles:
                 backup_dest = neighbour
+        dest = best_dest
     else:
         dest = path[-2]
 

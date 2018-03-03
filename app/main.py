@@ -161,6 +161,8 @@ def get_direction(src, dest):
 def move():
     tick_start = clock()
     data = bottle.request.json
+    
+    FOOD_THRESHOLD = 50
 
 
     try:
@@ -244,7 +246,7 @@ def move():
     
     closest_food_pos, closest_food_dist = find_closest_pos_dist(my_head_pos, foods)
     print("head extensions: ",  head_extension_debug)
-    if my_health > 40 and closest_food_dist > closest_to_food[closest_food_pos]["dist"]:
+    if my_health > FOOD_THRESHOLD and closest_food_dist > closest_to_food[closest_food_pos]["dist"]:
         target = my_tail_pos
     else:
         target = closest_food_pos

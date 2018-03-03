@@ -293,7 +293,7 @@ def move():
             for sample in sampled:
                 openness = flood_fill(sample, board_size, extended_obstacles)
                 if sample != target and sample not in extended_obstacles:
-                    path = path_finder.search(sample)
+                    path = path_finder.search(sample, extended_obstacles)
                     if path != None:
                         dest = path[-2]
     else:

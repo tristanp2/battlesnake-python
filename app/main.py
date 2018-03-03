@@ -259,7 +259,7 @@ def move():
     for x in range(board_width):
         for y in range(board_height):
             pos = (x,y)
-            if pos not in pathfind_extended_obstacles:
+            if pos not in pathfind_obstacles:
                 neighbours = get_neighbours(pos, board_size) 
                 cost = 5
                 for n in neighbours:

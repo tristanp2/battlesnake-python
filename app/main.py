@@ -328,6 +328,7 @@ def move():
         else:
             dest = best_dest
 
+    print(my_head_pos in extended_obstacles)
     print("dest openness: ", flood_fill(dest, board_size, extended_obstacles))
 
     print("moving from {} to {}".format(my_head_pos,dest))

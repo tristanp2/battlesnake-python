@@ -64,7 +64,7 @@ def sample_surrounding_pos(pos, board_size, dist = 3):
     x00 = pos[0] - dist/2
     x01 = pos[0] + dist/2
     y00 = pos[1] - dist/2
-    x01 = pos[1] + dist/2
+    y01 = pos[1] + dist/2
     
     ret_list = []
 
@@ -171,6 +171,7 @@ def move():
         print("No json info found")
         info = {}
         info["ticks"] = 0
+        info["taunt"] = "debug"
 
     print("tick:",info["ticks"])
     info["ticks"] += 1

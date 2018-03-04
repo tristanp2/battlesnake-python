@@ -129,6 +129,8 @@ def flood_fill(pos, board_size, obstacles):
     q = Queue()
     found.add(pos)
     q.put(pos)
+    if pos in obstacles:
+        return 0
     
     while not q.empty():
         pos = q.get()

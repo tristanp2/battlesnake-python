@@ -7,6 +7,14 @@ from search import AStar, in_dict, get_neighbours, manhattan_dist, flood_fill
 from time import clock
 
 
+taunts = [
+          "Go on, prove me wrong. Destroy the fabric of the universe. See if I care.",
+          "He had delusions of adequacy.",
+          "There's nothing wrong with you that reincarnation won't cure.",
+          "I didn't attend the funeral, but I sent a nice letter saying I approved of it",
+          "I have never killed a man, but I have read many obituaries with great pleasure.",
+          "He had no enemies, but was intensely disliked by his friends."
+          ]
 
 @bottle.route('/')
 def static():
@@ -27,7 +35,7 @@ def start():
     board_width = data.get('width')
     board_height = data.get('height')
 
-    head_url = '%s://%s/static/head.png' % (
+    head_url = '%s://%s/static/head.gif' % (
         bottle.request.urlparts.scheme,
         bottle.request.urlparts.netloc
     )
@@ -345,9 +353,11 @@ def move():
     print("Elapsed: {}ms".format(tick_duration*1000))
     
     json.dump(info, open("info.json","w"))
+    
+    n_dead = len(snakes) % len(taunts)
     return {
         'move': direction,
-        'taunt': taunt
+        'taunt': taunts[n_dead]
     }
 
 

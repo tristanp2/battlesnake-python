@@ -162,7 +162,7 @@ def move():
     tick_start = clock()
     data = bottle.request.json
     
-    FOOD_THRESHOLD = 50
+    FOOD_THRESHOLD = 60
 
 
     try:

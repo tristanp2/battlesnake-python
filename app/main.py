@@ -284,6 +284,7 @@ def move():
 
     print("target: ", target)
 
+    print(my_tail_pos)
     #prefer to avoid entering extended obstacles
     #       in future, the following code will be last resort, after no valid targets are found
     dest = None

@@ -310,6 +310,7 @@ def move():
                     best_open = openness
                 break
             elif neighbour not in obstacles:
+                print("backup")
                 backup_dest = neighbour
         dest = best_dest
         print("most open is: ", best_open,best_dest)

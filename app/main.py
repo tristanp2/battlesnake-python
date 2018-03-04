@@ -171,7 +171,7 @@ def move():
     data = bottle.request.json
     
     FOOD_THRESHOLD = 60
-
+    PECKISH_THRESHOLD = 80
 
     try:
         #get information saved from previous tick
@@ -258,7 +258,7 @@ def move():
     print("tailpos obst: ", my_tail_pos in extended_obstacles)
     closest_food_pos, closest_food_dist = find_closest_pos_dist(my_head_pos, foods)
     print("head extensions: ",  head_extension_debug)
-    if num_food > num_snakes and my_health > FOOD_THRESHOLD:
+    if (num_food > num_snakes and my_health > FOOD_THRESHOLD) or (num_food <= num_snakes and my_health > PECKISH_THRESHOLD):
         target = my_tail_pos
     else:
         target = closest_food_pos

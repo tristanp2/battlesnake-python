@@ -356,7 +356,7 @@ def move():
     
     json.dump(info, open("info.json","w"))
     
-    n_dead = len([ _snake["health"] for _snake in snakes if _snake["health"] > 0]) % len(taunts)
+    n_dead = len(snakes) % len(taunts)
     return {
         'move': direction,
         'taunt': taunts[n_dead]

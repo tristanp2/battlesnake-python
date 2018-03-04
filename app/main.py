@@ -189,6 +189,7 @@ def move():
 
 
     foods = parse_point_list(data["food"]["data"])
+    num_food = len(foods)
     board_width  = data["width"]
     board_height = data["height"]
     board_size = (board_width, board_height)
@@ -200,6 +201,7 @@ def move():
     my_health = my_snake["health"]
     my_size = len(my_body)
     snakes = data["snakes"]["data"]
+    num_snakes = len(snakes)
 
     closest_to_food = {}
     for food in foods:
@@ -253,9 +255,10 @@ def move():
 
         obstacles.update(body_points)
     
+    print("tailpos obst: ", my_tail_pos in extended_obstacles)
     closest_food_pos, closest_food_dist = find_closest_pos_dist(my_head_pos, foods)
     print("head extensions: ",  head_extension_debug)
-    if my_health > FOOD_THRESHOLD:
+    if num_food > num_snakes and my_health > FOOD_THRESHOLD:
         target = my_tail_pos
     else:
         target = closest_food_pos

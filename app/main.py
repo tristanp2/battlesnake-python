@@ -320,7 +320,10 @@ def move():
     elif dest == None and backup_dest == None:
         print("we r fuked")
     print("obst: ", extended_obstacles)
-    openness = flood_fill(dest,board_size,extended_obstacles)
+    if dest == my_tail_pos:
+        openness = my_size*2
+    else:
+        openness = flood_fill(dest,board_size,extended_obstacles)
     if openness < my_size*2:
         print("heading to deadend?")
         neighbours = get_neighbours(my_head_pos, board_size)

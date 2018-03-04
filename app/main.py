@@ -300,8 +300,10 @@ def move():
         best_dest = None
         print("finding valid space in: ", neighbours)
         for neighbour in neighbours:
+            print(neighbour)
             if neighbour not in extended_obstacles:
                 openness = flood_fill(neighbour, board_size, extended_obstacles)
+                print(neighbour,openness)
                 if openness > best_open:
                     best_dest = neighbour
                     best_open = openness

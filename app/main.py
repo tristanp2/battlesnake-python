@@ -193,7 +193,7 @@ def move():
     my_tail_pos = my_body[-1]
     my_health = my_snake['health']
     my_size = len(my_body)
-    snakes = data['snakes']
+    snakes = data['board']['snakes']
     num_snakes = len(snakes)
 
     closest_to_food = {}

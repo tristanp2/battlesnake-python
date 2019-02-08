@@ -8,17 +8,17 @@ from time import clock
 
 
 taunts = [
-          "Go on, prove me wrong. Destroy the fabric of the universe. See if I care.",
-          "He had delusions of adequacy.",
-          "There's nothing wrong with you that reincarnation won't cure.",
-          "I didn't attend the funeral, but I sent a nice letter saying I approved of it",
-          "I have never killed a man, but I have read many obituaries with great pleasure.",
-          "He had no enemies, but was intensely disliked by his friends."
+          'Go on, prove me wrong. Destroy the fabric of the universe. See if I care.',
+          'He had delusions of adequacy.',
+          'There\'s nothing wrong with you that reincarnation won\'t cure.',
+          'I didn\'t attend the funeral, but I sent a nice letter saying I approved of it',
+          'I have never killed a man, but I have read many obituaries with great pleasure.',
+          'He had no enemies, but was intensely disliked by his friends.'
           ]
 
 @bottle.route('/')
 def static():
-    return "the server is running"
+    return 'the server is running'
 
 
 @bottle.route('/static/<path:path>')
@@ -42,14 +42,14 @@ def start():
 
     #setup persistent info
     info = {}
-    info["ticks"] = 0
+    info['ticks'] = 0
     import socket
     taunt = socket.gethostname()
-    info["taunt"] = taunt
+    info['taunt'] = taunt
 
 
     json.dump(info, open('info.json', 'w'))
-    print("info file created")
+    print('info file created')
 
     return {
         'color': '#DD00DD',
@@ -122,7 +122,7 @@ def find_closest_pos(pos, pos_list):
     return find_closest_pos_dist(pos,pos_list)[0]
 
 def parse_point(point_obj):
-    return (point_obj["x"],point_obj["y"])
+    return (point_obj['x'],point_obj['y'])
 
 #assumes head is first in list
 def extend_head(body_points, board_size):
@@ -136,7 +136,7 @@ def extend_head(body_points, board_size):
             extension.append(neighbour)
             body_points.insert(0,neighbour)
 
-    print("extension of {}: {}".format(head, extension))
+    print('extension of {}: {}'.format(head, extension))
     return extension
 
 #assumes tail is last in list
@@ -152,11 +152,11 @@ def get_direction(src, dest):
     (x2,y2) = dest
     dx = x2 - x1
     dy = y2 - y1
-    if dx > 0:  return "right"
-    if dx < 0:  return "left"
-    if dy > 0:  return "down"
+    if dx > 0:  return 'right'
+    if dx < 0:  return 'left'
+    if dy > 0:  return 'down'
 
-    return "up"
+    return 'up'
 
 @bottle.post('/move')
 def move():
@@ -168,50 +168,50 @@ def move():
 
     try:
         #get information saved from previous tick
-        info = json.load(open("info.json","r"))
+        info = json.load(open('info.json','r'))
     except:
         #if no information was saved, initialize info
-        print("No json info found")
+        print('No json info found')
         info = {}
-        info["ticks"] = 0
-        info["taunt"] = "debug"
+        info['ticks'] = 0
+        info['taunt'] = 'debug'
 
-    print("tick:",info["ticks"])
-    info["ticks"] += 1
-    taunt = info["taunt"]
+    print('tick:',info['ticks'])
+    info['ticks'] += 1
+    taunt = info['taunt']
 
 
-    foods = parse_point_list(data["food"])
+    foods = parse_point_list(data['board']['food'])
     num_food = len(foods)
-    board_width  = data["board"]["width"]
-    board_height = data["board"]["height"]
+    board_width  = data['board']['width']
+    board_height = data['board']['height']
     board_size = (board_width, board_height)
-    my_snake = data["you"]
-    my_id = my_snake["id"]
-    my_body = parse_point_list(my_snake["body"])
+    my_snake = data['you']
+    my_id = my_snake['id']
+    my_body = parse_point_list(my_snake['body'])
     my_head_pos = my_body[0]
     my_tail_pos = my_body[-1]
-    my_health = my_snake["health"]
+    my_health = my_snake['health']
     my_size = len(my_body)
-    snakes = data["snakes"]
+    snakes = data['snakes']
     num_snakes = len(snakes)
 
     closest_to_food = {}
     for food in foods:
         closest_to_food[food] = {}
-        closest_to_food[food]["dist"] = 10000
+        closest_to_food[food]['dist'] = 10000
 
     #obstacles gathering loop
     obstacles = set()
     extended_obstacles = set()
     head_extension_debug = []
     for snake in snakes:
-        body_points = parse_point_list(snake["body"])
-        if snake.get("id") == my_id:
+        body_points = parse_point_list(snake['body'])
+        if snake.get('id') == my_id:
             food_pos, food_dist = find_closest_pos_dist(my_head_pos, foods)
-            if food_dist < closest_to_food[food_pos]["dist"]:
-                closest_to_food[food_pos]["dist"] = food_dist
-                closest_to_food[food_pos]["id"] = snake.get("id")
+            if food_dist < closest_to_food[food_pos]['dist']:
+                closest_to_food[food_pos]['dist'] = food_dist
+                closest_to_food[food_pos]['id'] = snake.get('id')
 
             if food_dist > 1:
                 body_points = body_points[:-1]
@@ -225,9 +225,9 @@ def move():
             snake_dist = manhattan_dist(my_head_pos, head_pos)
             snake_size = len(body_points)
             food_pos, food_dist = find_closest_pos_dist(head_pos, foods)
-            if food_dist < closest_to_food[food_pos]["dist"]:
-                closest_to_food[food_pos]["dist"] = food_dist
-                closest_to_food[food_pos]["id"] = snake.get("id")
+            if food_dist < closest_to_food[food_pos]['dist']:
+                closest_to_food[food_pos]['dist'] = food_dist
+                closest_to_food[food_pos]['id'] = snake.get('id')
 
             if snake_dist == 2 and snake_size < my_size:
                 #offense!
@@ -238,7 +238,7 @@ def move():
                 extended_obstacles.update(extension)
 
             if manhattan_dist(my_head_pos, head_pos) < 3 and (head_pos[0] == 0 or head_pos[1] == 0):
-                print("ATTACCHCCHCK")
+                print('ATTACCHCCHCK')
 
             #tail positions should only be removed when the owning snake's head is not
             # one space away from food. this also goes for our snake
@@ -248,9 +248,9 @@ def move():
 
         obstacles.update(body_points)
     
-    print("tailpos obst: ", my_tail_pos in extended_obstacles)
+    print('tailpos obst: ', my_tail_pos in extended_obstacles)
     closest_food_pos, closest_food_dist = find_closest_pos_dist(my_head_pos, foods)
-    print("head extensions: ",  head_extension_debug)
+    print('head extensions: ',  head_extension_debug)
     if (num_food > num_snakes and my_health > FOOD_THRESHOLD) or (num_food <= num_snakes and my_health > PECKISH_THRESHOLD):
         target = my_tail_pos
     else:
@@ -272,10 +272,10 @@ def move():
                 space_cost[pos] = max(cost,0)
                 
 
-    print("head: ", my_head_pos)
+    print('head: ', my_head_pos)
     path_finder = AStar((board_width, board_height), my_head_pos)
 
-    print("target: ", target)
+    print('target: ', target)
 
     print(my_tail_pos)
     #prefer to avoid entering extended obstacles
@@ -284,15 +284,15 @@ def move():
     backup_dest = None
     path = path_finder.search(target, pathfind_extended_obstacles, space_cost)
     if path == None:
-        print("second pathfind attempt")
+        print('second pathfind attempt')
         path = path_finder.search(target, pathfind_obstacles, space_cost)
 
     if target in extended_obstacles or path == None:
-        print("find new target!!!")
+        print('find new target!!!')
         neighbours = get_neighbours(my_head_pos, board_size)
         best_open = -1
         best_dest = None
-        print("finding valid space in: ", neighbours)
+        print('finding valid space in: ', neighbours)
         for neighbour in neighbours:
             print(neighbour)
             if neighbour not in extended_obstacles:
@@ -303,39 +303,39 @@ def move():
                     best_open = openness
                 break
             elif neighbour not in obstacles:
-                print("backup")
+                print('backup')
                 backup_dest = neighbour
         dest = best_dest
-        print("most open is: ", best_open,best_dest)
+        print('most open is: ', best_open,best_dest)
     else:
         dest = path[-2]
 
 
     if dest == None and backup_dest != None:
-        print("using backup dest")
+        print('using backup dest')
         dest = backup_dest
     elif dest == None and backup_dest == None:
-        print("we r fuked")
-    print("obst: ", extended_obstacles)
+        print('we r fuked')
+    print('obst: ', extended_obstacles)
     if dest == my_tail_pos:
         openness = my_size*2
     else:
         openness = flood_fill(dest,board_size,extended_obstacles)
     if openness < my_size*2:
-        print("heading to deadend?")
+        print('heading to deadend?')
         neighbours = get_neighbours(my_head_pos, board_size)
         best_open = -1
         best_dest = None
-        print("checking neighbours...")
+        print('checking neighbours...')
         for neighbour in neighbours:
             if neighbour not in extended_obstacles:
-                print(neighbour, "is potential move")
+                print(neighbour, 'is potential move')
                 openness = flood_fill(neighbour, board_size, extended_obstacles)
                 if openness > best_open:
                     best_open = openness
                     best_dest = neighbour
             else:
-                print(neighbour, " in obstacles")
+                print(neighbour, ' in obstacles')
 
         if best_dest == None:
             for neighbour in neighbours:
@@ -346,16 +346,16 @@ def move():
             dest = best_dest
 
     print(my_head_pos in extended_obstacles)
-    print("dest openness: ", flood_fill(dest, board_size, extended_obstacles))
+    print('dest openness: ', flood_fill(dest, board_size, extended_obstacles))
 
-    print("moving from {} to {}".format(my_head_pos,dest))
+    print('moving from {} to {}'.format(my_head_pos,dest))
     direction = get_direction(my_head_pos,dest)
     print(direction)
     tick_end = clock()
     tick_duration = tick_end - tick_start
-    print("Elapsed: {}ms".format(tick_duration*1000))
+    print('Elapsed: {}ms'.format(tick_duration*1000))
     
-    json.dump(info, open("info.json","w"))
+    json.dump(info, open('info.json','w'))
     
     n_dead = len(snakes) % len(taunts)
     return {

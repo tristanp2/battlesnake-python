@@ -229,7 +229,7 @@ def move():
             snake_dist = manhattan_dist(my_head_pos, head_pos)
             snake_size = len(body_points)
             food_pos, food_dist = find_closest_pos_dist(head_pos, foods)
-            if food_dist < closest_to_food[food_pos]['dist']:
+            if food_pos != None and food_dist < closest_to_food[food_pos]['dist']:
                 closest_to_food[food_pos]['dist'] = food_dist
                 closest_to_food[food_pos]['id'] = snake.get('id')
 
@@ -363,11 +363,6 @@ def move():
     
     n_dead = len(snakes) % len(taunts)
     return move_response(direction)
-    """
-    return {
-        'move': direction,
-    }
-    """
 
 @bottle.post('/end')
 def end():

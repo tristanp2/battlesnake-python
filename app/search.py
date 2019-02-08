@@ -71,8 +71,8 @@ class AStar:
                 came_from[pos] = None
                 g_score[pos] = Container(INF)
 
+        print("finding path {} --> {}".format(self.pos,goal))
         g_score[self.pos] = Container(self.heuristic(self.pos, goal))
-        #print("finding path {} --> {}".format(self.pos,goal))
         i = 0
         while not open_set_pq.empty():
             i += 1

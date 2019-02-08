@@ -255,7 +255,7 @@ def move():
     print('tailpos obst: ', my_tail_pos in extended_obstacles)
     closest_food_pos, closest_food_dist = find_closest_pos_dist(my_head_pos, foods)
     print('head extensions: ',  head_extension_debug)
-    if (num_food > num_snakes and my_health > FOOD_THRESHOLD) or (num_food <= num_snakes and my_health > PECKISH_THRESHOLD):
+    if (num_food > num_snakes and my_health > FOOD_THRESHOLD) or (num_food <= num_snakes and my_health > PECKISH_THRESHOLD) or closest_food_pos == None:
         target = my_tail_pos
     else:
         target = closest_food_pos
@@ -371,7 +371,6 @@ def end():
 
 @bottle.post('/ping')
 def ping():
-
     return ping_response()
 
 

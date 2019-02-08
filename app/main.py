@@ -51,15 +51,8 @@ def start():
     json.dump(info, open('info.json', 'w'))
     print("info file created")
 
-    
-
     return {
         'color': '#DD00DD',
-        'secondary_color': '0000FF',
-        'taunt': taunt,
-        'head_url': head_url,
-        'head_type': 'safe',
-        'tail_type': 'small-rattle'
     }
 
 def sample_surrounding_pos(pos, board_size, dist = 3):
@@ -188,19 +181,19 @@ def move():
     taunt = info["taunt"]
 
 
-    foods = parse_point_list(data["food"]["data"])
+    foods = parse_point_list(data["food"])
     num_food = len(foods)
-    board_width  = data["width"]
-    board_height = data["height"]
+    board_width  = data["board"]["width"]
+    board_height = data["board"]["height"]
     board_size = (board_width, board_height)
     my_snake = data["you"]
     my_id = my_snake["id"]
-    my_body = parse_point_list(my_snake["body"]["data"])
+    my_body = parse_point_list(my_snake["body"])
     my_head_pos = my_body[0]
     my_tail_pos = my_body[-1]
     my_health = my_snake["health"]
     my_size = len(my_body)
-    snakes = data["snakes"]["data"]
+    snakes = data["snakes"]
     num_snakes = len(snakes)
 
     closest_to_food = {}
@@ -213,7 +206,7 @@ def move():
     extended_obstacles = set()
     head_extension_debug = []
     for snake in snakes:
-        body_points = parse_point_list(snake["body"]["data"])
+        body_points = parse_point_list(snake["body"])
         if snake.get("id") == my_id:
             food_pos, food_dist = find_closest_pos_dist(my_head_pos, foods)
             if food_dist < closest_to_food[food_pos]["dist"]:
@@ -367,7 +360,6 @@ def move():
     n_dead = len(snakes) % len(taunts)
     return {
         'move': direction,
-        'taunt': taunts[n_dead]
     }
 
 

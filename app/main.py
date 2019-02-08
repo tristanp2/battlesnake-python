@@ -213,7 +213,7 @@ def move():
         body_points = parse_point_list(snake['body'])
         if snake.get('id') == my_id:
             food_pos, food_dist = find_closest_pos_dist(my_head_pos, foods)
-            if food_dist < closest_to_food[food_pos]['dist']:
+            if food_pos != None and food_dist < closest_to_food[food_pos]['dist']:
                 closest_to_food[food_pos]['dist'] = food_dist
                 closest_to_food[food_pos]['id'] = snake.get('id')
 

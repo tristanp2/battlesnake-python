@@ -2,11 +2,13 @@ import json
 from bottle import HTTPResponse
 
 def ping_response():
+    print('sending ping response')
     return HTTPResponse(
         status=200
         )
 
 def start_response(color):
+    print('sending start response')
     return HTTPResponse(
             status=200,
             headers={
@@ -17,6 +19,7 @@ def start_response(color):
             })
         )
 def move_response(move):
+    print('sending move response')
     return HTTPResponse(
             status=200,
             headers={
@@ -27,6 +30,7 @@ def move_response(move):
             })
         )
 def end_response():
+    print('sending end response')
     return HTTPResponse(
             status=200
         )

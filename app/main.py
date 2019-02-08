@@ -371,10 +371,12 @@ def move():
 
 @bottle.post('\end')
 def end():
+    data = bottle.request.json
     return end_response()
 
 @bottle.post('\ping')
 def ping():
+
     return ping_response()
 
 

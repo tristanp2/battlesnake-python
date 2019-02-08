@@ -4,6 +4,7 @@ import os
 import random
 import json
 from search import AStar, in_dict, get_neighbours, manhattan_dist, flood_fill
+from api import ping_response, start_response, move_response, end_response
 from time import clock
 
 
@@ -51,9 +52,12 @@ def start():
     json.dump(info, open('info.json', 'w'))
     print('info file created')
 
+    return start_response('#DD00DD')
+    """
     return {
         'color': '#DD00DD',
     }
+    """
 
 def sample_surrounding_pos(pos, board_size, dist = 3):
     width,height = board_size
@@ -358,17 +362,20 @@ def move():
     json.dump(info, open('info.json','w'))
     
     n_dead = len(snakes) % len(taunts)
+    return move_response(direction)
+    """
     return {
         'move': direction,
     }
+    """
 
 @bottle.post('\end')
 def end():
-    return True
+    return end_response()
 
 @bottle.post('\ping')
 def ping():
-    return True
+    return ping_response()
 
 
 # Expose WSGI app (so gunicorn can find it)

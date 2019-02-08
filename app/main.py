@@ -362,6 +362,14 @@ def move():
         'move': direction,
     }
 
+@bottle.post('\end')
+def end():
+    return True
+
+@bottle.post('\ping')
+def ping():
+    return True
+
 
 # Expose WSGI app (so gunicorn can find it)
 application = bottle.default_app()

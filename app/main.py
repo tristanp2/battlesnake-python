@@ -378,8 +378,14 @@ def ping():
 application = bottle.default_app()
 
 if __name__ == '__main__':
+    try:
+        config = json.load(open('config.json', 'r'))
+    except:
+        config = {}
+        config['PORT'] = '8080'
+        config['HOST'] = '0.0.0.0'
     bottle.run(
         application,
-        host=os.getenv('IP', '0.0.0.0'),
-        port=os.getenv('PORT', '8080'),
+        host=os.getenv('IP', config['HOST']),
+        port=os.getenv('PORT', config['PORT']),
         debug = True)

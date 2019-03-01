@@ -4,7 +4,7 @@ import os
 import random
 import json
 from search import AStar, in_dict, get_neighbours, manhattan_dist, flood_fill
-from api import ping_response, start_response, move_response, end_response
+from api import ping_response, start_response, move_response, end_response, convert_move_data
 from time import clock
 
 
@@ -52,7 +52,7 @@ def start():
     json.dump(info, open('info.json', 'w'))
     print('info file created')
 
-    return start_response('#DD00DD')
+    return start_response({'color': '#DD00DD'})
     """
     return {
         'color': '#DD00DD',
@@ -165,7 +165,7 @@ def get_direction(src, dest):
 @bottle.post('/move')
 def move():
     tick_start = clock()
-    data = bottle.request.json
+    data = convert_move_data(bottle.request.json)
     
     FOOD_THRESHOLD = 60
     PECKISH_THRESHOLD = 80
@@ -362,7 +362,7 @@ def move():
     json.dump(info, open('info.json','w'))
     
     n_dead = len(snakes) % len(taunts)
-    return move_response(direction)
+    return move_response({'move': direction})
 
 @bottle.post('/end')
 def end():

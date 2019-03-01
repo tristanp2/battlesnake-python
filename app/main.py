@@ -52,7 +52,7 @@ def start():
     json.dump(info, open('info.json', 'w'))
     print('info file created')
 
-    return start_response('#DD00DD')
+    return start_response('#DDAADD')
     """
     return {
         'color': '#DD00DD',
@@ -147,6 +147,34 @@ def extend_head(body_points, board_size):
 def shrink_tail(body_points):
     return body_points[:-1]
 
+def shrink_me(my_body):
+    head = my_body[0]
+    tail = my_body[-1]
+    new_body = []
+
+    for (i, point) in enumerate(my_body):
+        head_dist = manhattan_dist(head, point)
+        tail_dist = manhattan_dist(tail, point)
+        if head_dist <= i + 1:
+            new_body.append(point)
+
+    return new_body
+    
+def shrink_snake(snake_body, my_head_pos):
+    min_dist = 0
+    for point in snake_body:
+        dist = manhattan_dist(my_head_pos, point)
+        if dist < min_dist:
+            min_dist = dist
+
+    print('min_dist: ', min_dist) 
+    if min_dist == 0:
+        return snake_body
+    elif min_dist  < len(snake_body):
+        return snake_body[:-(min_dist-1)]
+    else:
+        return [snake_body[0]]
+
 #converts list of point dicts to list of tuples
 def parse_point_list(body_data):
     return map(parse_point, body_data)
@@ -212,19 +240,24 @@ def move():
     for snake in snakes:
         body_points = parse_point_list(snake['body'])
         if snake.get('id') == my_id:
+            print('my body points ', body_points)
+            body_points = shrink_me(body_points)
+            print('my shrunk body points ', body_points)
             food_pos, food_dist = find_closest_pos_dist(my_head_pos, foods)
             if food_pos != None and food_dist < closest_to_food[food_pos]['dist']:
                 closest_to_food[food_pos]['dist'] = food_dist
                 closest_to_food[food_pos]['id'] = snake.get('id')
 
-            if food_dist > 1:
-                body_points = body_points[:-1]
         else:
             #TODO: moving into a head extension of a smaller snake might be a really good offensive move
             #       need to make sure to not get into shit while doing it though
             #heads should only be extended based on certain criteria:
             #       - in certain range of our head
             #       - owning snake is as big as our snake
+            
+            print('body points before shrink: ', body_points)
+            body_points = shrink_snake(body_points, my_head_pos)
+            print('body points after shrink: ', body_points)
             head_pos = body_points[0]
             snake_dist = manhattan_dist(my_head_pos, head_pos)
             snake_size = len(body_points)

@@ -416,8 +416,9 @@ def move():
     closest_food_pos, closest_food_dist = find_closest_pos_dist(my_head_pos, foods)
     target_ext = []
     print('head extensions: ',  head_extension_debug)
-    print('closest food openness: ', flood_fill(closest_food_pos, board_size, obstacles), ' pos: ', closest_food_pos)
-    if ((flood_fill(closest_food_pos, board_size, obstacles) > 2*my_size or my_health < 0.6*FOOD_THRESHOLD) and  
+    if closest_food_pos != None:
+        print('closest food openness: ', flood_fill(closest_food_pos, board_size, obstacles), ' pos: ', closest_food_pos)
+    if ((closest_food_pos != None and flood_fill(closest_food_pos, board_size, obstacles) > 2*my_size or my_health < 0.6*FOOD_THRESHOLD) and  
         ((my_health <= FOOD_THRESHOLD and 
         (closest_to_food[closest_food_pos]['id'] == my_id or 
         (closest_to_food[closest_food_pos]['id'] != my_id and 

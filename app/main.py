@@ -437,7 +437,9 @@ def move():
 
         target_body = target_snake['body']
         target_type = 'attack'
-        target = get_predicted_snake_pos([get_predicted_snake_pos(target_body, board_size, obstacles)] + target_body,
+        obst = get_predicted_snake_pos(target_body, board_size, obstacles)
+        obstacles.add(obst)
+        target = get_predicted_snake_pos([obst] + target_body,
             board_size, obstacles)
         extended_obstacles -= set(snake_extension_dict[target_snake['id']])
             

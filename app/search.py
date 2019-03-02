@@ -43,8 +43,6 @@ class Container:
         return self.value < other.value
 
 class AStar:
-
-
     def __init__(self, size, pos):
         (self.width, self.height) = size;
         self.pos = pos;
@@ -71,7 +69,7 @@ class AStar:
                 came_from[pos] = None
                 g_score[pos] = Container(INF)
 
-        print("finding path {} --> {}".format(self.pos,goal))
+        #print("finding path {} --> {}".format(self.pos,goal))
         g_score[self.pos] = Container(self.heuristic(self.pos, goal))
         i = 0
         while not open_set_pq.empty():
@@ -86,11 +84,15 @@ class AStar:
             evaluated[current_pos] = current_score.value
             neighbours = self.get_neighbours(current_pos)
             for neighbour in neighbours:
+                #print('\tconsidering neighbour: ', neighbour)
                 if in_dict(evaluated,neighbour):
+                    #print('\tevaluated')
                     continue
                 elif neighbour in obstacles:
+                    #print('\tobstacle')
                     continue
                 elif not in_dict(g_score,neighbour):
+                    #print('\tnot in gscore dict')
                     continue
 
 
@@ -110,11 +112,15 @@ class AStar:
 
     def reconstruct_path(self, came_from, current):
         total_path = [current]
+        # print('reconstructing')
+        # print('current: ', current)
         while True:
             current = came_from[current]
+            # print('current: ', current)
             if(current == None):
                 break
             total_path.append(current)
+        # print('total path ', total_path)
         return total_path
 
         

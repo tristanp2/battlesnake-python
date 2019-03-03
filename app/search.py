@@ -45,19 +45,18 @@ class Container:
 class AStar:
     def __init__(self, size, pos):
         (self.width, self.height) = size;
-        self.pos = pos;
-    
+
     #currently uses dicts in a few places where it should use sets
-    def search(self, goal, obstacles, space_cost = None):
+    def search(self, start_pos, goal, obstacles, space_cost = None):
         evaluated = {}
         
         open_set_pq = PriorityQueue()
-        open_set_pq.put((Container(0), self.pos)) 
+        open_set_pq.put((Container(0), start_pos)) 
         open_set = {}
-        open_set[self.pos] = 0
+        open_set[start_pos] = 0
         #cost of getting to these nodes from start
         f_score = {}
-        f_score[self.pos] = 0
+        f_score[start_pos] = 0
         g_score = {}
         came_from = {}
         
@@ -69,8 +68,8 @@ class AStar:
                 came_from[pos] = None
                 g_score[pos] = Container(INF)
 
-        #print("finding path {} --> {}".format(self.pos,goal))
-        g_score[self.pos] = Container(self.heuristic(self.pos, goal))
+        print("finding path {} --> {}".format(start_pos,goal))
+        g_score[start_pos] = Container(self.heuristic(start_pos, goal))
         i = 0
         while not open_set_pq.empty():
             i += 1

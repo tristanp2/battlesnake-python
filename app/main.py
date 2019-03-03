@@ -138,20 +138,20 @@ def extend_head(body_points, board_size, my_head_pos):
         x, y = head
         if direction == 'up':
             extension.append((x, y - i))
-            extension.append((x - i//2, y))
-            extension.append((x + i//2, y))
+            extension.append((x - 1, y))
+            extension.append((x + 1, y))
         elif direction == 'right':
             extension.append((x + i, y))
-            extension.append((x, y + i//2))
-            extension.append((x, y - i//2))
+            extension.append((x, y + 1))
+            extension.append((x, y - 1))
         elif direction == 'down':
             extension.append((x, y + i))
-            extension.append((x - i//2, y))
-            extension.append((x + i//2, y))
+            extension.append((x - 1, y))
+            extension.append((x + 1, y))
         else:
             extension.append((x - i,  y))
-            extension.append((x, y + i//2))
-            extension.append((x, y - i//2))
+            extension.append((x, y + 1))
+            extension.append((x, y - 1))
 
     for point in extension:
         body_set.add(point)
@@ -418,12 +418,12 @@ def move():
     print('head extensions: ',  head_extension_debug)
     if closest_food_pos != None:
         print('closest food openness: ', flood_fill(closest_food_pos, board_size, obstacles), ' pos: ', closest_food_pos)
-    if ((closest_food_pos != None and flood_fill(closest_food_pos, board_size, obstacles) > 2*my_size or my_health < 0.6*FOOD_THRESHOLD) and  
+    if (closest_food_pos != None and((flood_fill(closest_food_pos, board_size, obstacles) > 2*my_size or my_health < 0.6*FOOD_THRESHOLD) and  
         ((my_health <= FOOD_THRESHOLD and 
         (closest_to_food[closest_food_pos]['id'] == my_id or 
         (closest_to_food[closest_food_pos]['id'] != my_id and 
         closest_to_food[closest_food_pos]['dist'] > my_size))) or 
-        (closest_to_food[closest_food_pos]['dist'] <= 3 and closest_to_food[closest_food_pos]['id'] == my_id))):
+        (closest_to_food[closest_food_pos]['dist'] <= 3 and closest_to_food[closest_food_pos]['id'] == my_id)))):
 
         target = closest_food_pos
         target_type = 'food'
@@ -498,6 +498,7 @@ def move():
                 print('\t', space_cost[pos], end='')
             else:
                 print('\tINF', end='')
+                space_cost[pos] = 100000
         print()
                 
 
@@ -511,10 +512,16 @@ def move():
     dest = None
     backup_dest = None
     # print('pathfind: ', pathfind_extended_obstacles)
-    path = path_finder.search(target, pathfind_extended_obstacles, space_cost)
-    if path == None:
+    path = path_finder.search(my_head_pos, target, pathfind_extended_obstacles, space_cost)
+    exit_path = path_finder.search(target, my_tail_pos, pathfind_obstacles, space_cost)
+    target_openness = flood_fill(target, board_size, extended_obstacles) 
+    if path == None or (exit_path == None and target_openness < 2*my_size):
         print('no path. second pathfind attempt')
-        path = path_finder.search(target, pathfind_obstacles, space_cost)
+        if target_type == 'tail':
+            target = center_pos
+        else:
+            target = my_tail_pos
+        path = path_finder.search(my_head_pos, target, pathfind_extended_obstacles, space_cost)
 
     if target in extended_obstacles or path == None:
         print('find new target!!!')
@@ -539,6 +546,7 @@ def move():
         dest = best_dest
         print('most open is: ', best_open,best_dest)
     else:
+        print(path)
         dest = path[-2]
 
 
@@ -555,7 +563,7 @@ def move():
         print('heading to deadend?')
         if target_type != 'tail':
             print('attempting to target tail')
-            path = path_finder.search(my_tail_pos, pathfind_obstacles, space_cost)
+            path = path_finder.search(my_head_pos, my_tail_pos, pathfind_obstacles, space_cost)
             dest = None
             if path != None:
                 print('tail path found')

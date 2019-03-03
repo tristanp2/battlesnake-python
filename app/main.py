@@ -564,7 +564,7 @@ def move():
         openness = flood_fill(dest,board_size,extended_obstacles)
     if openness < my_size*2:
         print('heading to deadend?')
-        if target_type != 'tail':
+        if target_type != 'tail' and my_health > 20:
             print('attempting to target tail')
             path = path_finder.search(my_head_pos, my_tail_pos, pathfind_obstacles, space_cost)
             dest = None

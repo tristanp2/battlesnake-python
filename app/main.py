@@ -51,7 +51,7 @@ def start():
     json.dump(info, open('info.json', 'w'))
     print('info file created')
 
-    return start_response({'color': '#AADDAA'})
+    return start_response({'color': '#AADDAA', 'headType': 'beluga', 'tailType': 'round-bum'})
 
 directions = ['up','down','left','right']
 def sample_surrounding_pos(pos, board_size, dist = 3):

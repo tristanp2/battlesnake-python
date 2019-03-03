@@ -224,6 +224,7 @@ def shrink_snake(snake_body, my_head_pos):
         return snake_body[:-(min_dist-1)]
     else:
         return [snake_body[0]]
+
 def same_sign(num1, num2):
     return (num1 >= 0 and num2 >= 0) or (num1 < 0 and num2 < 0)
 def p2_outside_p1(refpoint, point, centerpoint):
@@ -438,7 +439,9 @@ def move():
         target_body = target_snake['body']
         target_type = 'attack'
         obst = get_predicted_snake_pos(target_body, board_size, obstacles)
+        head_neighbours = get_neighbours(target_body[0], board_size)
         obstacles.add(obst)
+        obstacles.update(head_neighbours)
         target = get_predicted_snake_pos([obst] + target_body,
             board_size, obstacles)
         extended_obstacles -= set(snake_extension_dict[target_snake['id']])
